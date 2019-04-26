@@ -1,4 +1,4 @@
-/* 
+/*
 assignment 4, do one stored procedure that does the following
 has to read from at least 3 tables (to be done on the employees table) has to:
 1 add a table
@@ -12,4 +12,4 @@ has to read from at least 3 tables (to be done on the employees table) has to:
 9 code a trigger on each three ops: Update, insert, delete
 */
 
--- Question: Create a table called salairesAndtitle. Insert each title into the table. Update it with the lowest salary and the emp_no that holds the lowest salaray for each title.
+-- return sum of pay increases to clarify, the salary increase should be calculated based on percentages and then inserted into the appropriate department table
