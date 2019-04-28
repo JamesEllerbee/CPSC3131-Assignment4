@@ -13,3 +13,9 @@ has to read from at least 3 tables (to be done on the employees table) has to:
 */
 
 -- return sum of pay increases to clarify, the salary increase should be calculated based on percentages and then inserted into the appropriate department table
+delimiter //
+CREATE PROCEDURE sum_pay_increase ()
+BEGIN
+
+END//
+delimiter ;
