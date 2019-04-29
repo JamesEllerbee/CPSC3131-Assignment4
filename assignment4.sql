@@ -19,3 +19,12 @@ BEGIN
 
 END//
 delimiter ;
+
+--4
+DELETE FROM salary
+WHERE to_date = "1987-06-28";
+--5
+DROP TABLE salary;
+
+--6
+--what tables do you want in a union? 
