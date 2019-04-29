@@ -23,7 +23,7 @@ CREATE TABLE empSalary
 	emp_no INT,
     title VARCHAR(255),
     salary INT,
-    
+
     PRIMARY KEY(emp_no)
 );
 -- 2 insert into table
@@ -42,5 +42,13 @@ SELECT title
 FROM titles
 WHERE empSalary.emp_no = titles.title;
 
+--4
+DELETE FROM salary
+WHERE to_date = "1987-06-28";
+--5
+DROP TABLE salary;
+
+--6
+--what tables do you want in a union?
 END//
 delimiter ;
