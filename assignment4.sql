@@ -16,6 +16,31 @@ has to read from at least 3 tables (to be done on the employees table) has to:
 delimiter //
 CREATE PROCEDURE sum_pay_increase ()
 BEGIN
+DROP TABLE IF EXISTS empSalary;
+-- 1 create table
+CREATE TABLE empSalary
+(
+	emp_no INT,
+    title VARCHAR(255),
+    salary INT,
+    
+    PRIMARY KEY(emp_no)
+);
+-- 2 insert into table
+INSERT INTO empSalary(emp_no)
+SELECT emp_no
+FROM employees;
+
+-- 3 update a table
+INSERT INTO empSalary(salary)
+SELECT salaries.salary
+FROM salaries
+WHERE empSalary.emp_no = salaries.emp_no;
+
+INSERT INTO empSalary(title)
+SELECT title
+FROM titles
+WHERE empSalary.emp_no = titles.title;
 
 END//
 delimiter ;
