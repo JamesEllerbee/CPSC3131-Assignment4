@@ -17,6 +17,9 @@ delimiter //
 CREATE PROCEDURE sum_pay_increase ()
 BEGIN
 DROP TABLE IF EXISTS empSalary;
+--4
+DELETE FROM salary
+WHERE to_date = "1987-06-28";
 -- 1 create table
 CREATE TABLE empSalary
 (
@@ -41,13 +44,8 @@ INSERT INTO empSalary(title)
 SELECT title
 FROM titles
 WHERE empSalary.emp_no = titles.title;
-
---4
-DELETE FROM salary
-WHERE to_date = "1987-06-28";
 --5
-DROP TABLE salary;
-
+DROP TABLE IF EXISTS salary;
 --6
 --what tables do you want in a union?
 END//
