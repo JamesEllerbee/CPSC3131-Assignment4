@@ -1,6 +1,11 @@
 /*
-assignment 4, do one stored procedure that does the following
+Adam Davies, James Ellerbee, Taylor Woods
+CPSC 3131
+Assignment 4; parts 1 - 3, 
+
+do one stored procedure that does the following
 has to read from at least 3 tables (to be done on the employees table) has to:
+
 1 add a table - add table of percentage salary increases by department
 2 instert into a table - calculate salary increase from percentage and use for updating
 3 update a table
@@ -11,6 +16,7 @@ has to read from at least 3 tables (to be done on the employees table) has to:
 8 return a value
 9 code a trigger on each three ops: Update, insert, delete
 */
+
 -- Question: create a table of percent pay increase by department which includes name and emp_no and title
 -- Insert into salary table
 -- delete old pay increase table
@@ -24,47 +30,34 @@ has to read from at least 3 tables (to be done on the employees table) has to:
 delimiter //
 CREATE PROCEDURE sum_pay_increase ()
 BEGIN
-DROP TABLE IF EXISTS empSalary;
--- 4
-DELETE FROM salary
-WHERE to_date = "1987-06-28";
-
--- 7
-
-
-
--- 9
+-- drop tables from previous execution
+DROP TABLE IF EXISTS salariesCopy;
+DROP TABLE IF EXISTS newSalaries;
+-- copy salaries table into copy to avoid making presistent changes to database
+CREATE TABLE salariesCopy LIKE salaires; 
+INSERT salariesCopy SELECT * FROM salaries; -- this is a good idea because this table remains until the SQL script is ran again.
 
 -- 1 create table
-CREATE TABLE empSalary
+ -- table will be used to store the current salary of the employees
+CREATE TABLE newSalaries
 (
 	emp_no INT,
-    title VARCHAR(255),
+	dept_name VARCHAR(255),
     salary INT,
 
     PRIMARY KEY(emp_no)
-); 
+);
 -- 2 insert into table
-INSERT INTO empSalary(emp_no)
-SELECT emp_no
+INSERT INTO newSalaries(emp_no)
+SELECT employees.emp_no
 FROM employees;
 
--- 3 update a table
-INSERT INTO empSalary(salary)
-SELECT salaries.salary
-FROM salaries
-WHERE empSalary.emp_no = salaries.emp_no;
+INSERT INTO newSalaries(dept_name)
+SELECT departments.dept_name
+FROM departments, dept_emp, employees
+WHERE (employees.emp_no = dept_emp.emp_no) AND (dept_emp.dept_no = departments.dept_no);
 
-INSERT INTO empSalary(title)
-SELECT title
-FROM titles
-WHERE empSalary.emp_no = titles.title;
--- 5
-DROP TABLE IF EXISTS salary;
--- 6
--- what tables do you want in a union?
-
--- 8
+-- 3 update table
 
 END//
 delimiter ;
