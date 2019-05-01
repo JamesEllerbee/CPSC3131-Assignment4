@@ -11,7 +11,14 @@ has to read from at least 3 tables (to be done on the employees table) has to:
 8 return a value
 9 code a trigger on each three ops: Update, insert, delete
 */
-
+-- Question: create a table of percent pay increase by department which includes name and emp_no and title
+-- Insert into salary table
+-- delete old pay increase table
+-- delete old pay increase columns
+-- Triggers
+-- Update: if a table is inserted into salaries update the salary column
+-- Delete: when a new percent pay increase table is created delete old percent insertions
+-- Insert: when a new percent pay increase table is created insert percentages
 -- return sum of pay increases to clarify, the salary increase should be calculated based on percentages and then inserted into the appropriate department table
 delimiter //
 CREATE PROCEDURE sum_pay_increase ()
