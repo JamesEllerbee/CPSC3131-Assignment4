@@ -26,16 +26,36 @@ has to read from at least 3 tables (to be done on the employees table) has to:
 -- Delete: when a new percent pay increase table is created delete old percent insertions
 -- Insert: when a new percent pay increase table is created insert percentages
 -- return sum of pay increases to clarify, the salary increase should be calculated based on percentages and then inserted into the appropriate department table
-DROP PROCEDURE IF EXISTS sum_pay_increase; -- allows multiple executions
+
+DROP PROCEDURE IF EXISTS sum_pay_increase; -- Drops procedure from previous execution
 delimiter //
 CREATE PROCEDURE sum_pay_increase ()
 BEGIN
+-- Precentage values, todo: update these values
+-- Customer Service
+DECLARE custServ FLOAT DEFAULT 0.01;
+-- Development
+DECLARE devel FLOAT DEFAULT 0.02;
+-- Finance
+DECLARE finan FLOAT DEFAULT 0.03;
+-- Human Resources
+DECLARE human FLOAT DEFAULT 0.04;
+-- Marketing
+DECLARE market FLOAT DEFAULT 0.05;
+-- Production
+DECLARE product FLOAT DEFAULT 0.06;
+-- Quality Management
+DECLARE quality FLOAT DEFAULT 0.07;
+-- Research
+DECLARE research FLOAT DEFAULT 0.08;
+-- Sales
+DECLARE sales FLOAT DEFAULT 0.09;
 -- drop tables from previous execution
 DROP TABLE IF EXISTS salariesCopy;
 DROP TABLE IF EXISTS newSalaries;
--- copy salaries table into copy to avoid making presistent changes to database
+-- copy salaries table into copy to avoid making presistent changes to database (avoid reimport of employee DB)
 CREATE TABLE salariesCopy LIKE salaires;
-INSERT salariesCopy SELECT * FROM salaries; -- this is a good idea because this table remains until the SQL script is ran again.
+INSERT salariesCopy SELECT * FROM salaries;
 
 -- 1 create table
  -- table will be used to store the current salary of the employees
@@ -44,10 +64,13 @@ CREATE TABLE newSalaries
 	emp_no INT,
 	dept_name VARCHAR(255),
     salary INT,
+    from_date DATE,
+    to_date DATE, 
 
     PRIMARY KEY(emp_no)
 );
 -- 2 insert into table
+
 INSERT INTO newSalaries(emp_no)
 SELECT employees.emp_no
 FROM employees;
@@ -57,8 +80,68 @@ SELECT departments.dept_name
 FROM departments, dept_emp, employees
 WHERE (employees.emp_no = dept_emp.emp_no) AND (dept_emp.dept_no = departments.dept_no);
 
--- 3 update table
+INSERT INTO newSalaries(salary)
+SELECT salaries.salary
+FROM salaries
+WHERE employees.emp_no = salaries.emp_no;
 
+INSERT INTO newSalaries(from_date)
+SELECT salaries.from_date
+FROM salaries
+WHERE employees.emp_no = salaries.emp_no;
+
+INSERT INTO newSalaries(from_date)
+SELECT salaries.from_date
+FROM salaries
+WHERE employees.emp_no = salaries.emp_no;
+
+-- 3 update table (honesty these should *count* as a if, else if)
+UPDATE newSalaries
+SET
+	salary = salary + (salary + custServ)
+WHERE newSalaries.dept_name = 'Customer Service';
+
+UPDATE newSalaries
+SET
+	salary = salary + (salary + devel)
+WHERE newSalaries.dept_name = 'Development';
+
+UPDATE newSalaries
+SET
+	salary = salary + (salary + finan)
+WHERE newSalaries.dept_name = 'Finance';
+
+UPDATE newSalaries
+SET
+	salary = salary + (salary + human)
+WHERE newSalaries.dept_name = 'Human Resources';
+
+UPDATE newSalaries
+SET
+	salary = salary + (salary + market)
+WHERE newSalaries.dept_name = 'Marketing';
+
+UPDATE newSalaries
+SET
+	salary = salary + (salary + product)
+WHERE newSalaries.dept_name = 'Production';
+
+UPDATE newSalaries
+SET
+	salary = salary + (salary + quality)
+WHERE newSalaries.dept_name = 'Quality Management';
+
+UPDATE newSalaries
+SET
+	salary = salary + (salary + research)
+WHERE newSalaries.dept_name = 'Research';
+
+UPDATE newSalaries
+SET
+	salary = salary + (salary + sales)
+WHERE newSalaries.dept_name = 'Sales';
 
 END//
 delimiter ;
+
+CALL sum_pay_increase();
