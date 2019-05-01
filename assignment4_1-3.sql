@@ -1,7 +1,7 @@
 /*
 Adam Davies, James Ellerbee, Taylor Woods
 CPSC 3131
-Assignment 4; parts 1 - 3, 
+Assignment 4; parts 1 - 3,
 
 do one stored procedure that does the following
 has to read from at least 3 tables (to be done on the employees table) has to:
@@ -26,7 +26,7 @@ has to read from at least 3 tables (to be done on the employees table) has to:
 -- Delete: when a new percent pay increase table is created delete old percent insertions
 -- Insert: when a new percent pay increase table is created insert percentages
 -- return sum of pay increases to clarify, the salary increase should be calculated based on percentages and then inserted into the appropriate department table
-
+DROP PROCEDURE IF EXISTS sum_pay_increase; -- allows multiple executions
 delimiter //
 CREATE PROCEDURE sum_pay_increase ()
 BEGIN
@@ -34,7 +34,7 @@ BEGIN
 DROP TABLE IF EXISTS salariesCopy;
 DROP TABLE IF EXISTS newSalaries;
 -- copy salaries table into copy to avoid making presistent changes to database
-CREATE TABLE salariesCopy LIKE salaires; 
+CREATE TABLE salariesCopy LIKE salaires;
 INSERT salariesCopy SELECT * FROM salaries; -- this is a good idea because this table remains until the SQL script is ran again.
 
 -- 1 create table
@@ -58,6 +58,7 @@ FROM departments, dept_emp, employees
 WHERE (employees.emp_no = dept_emp.emp_no) AND (dept_emp.dept_no = departments.dept_no);
 
 -- 3 update table
+
 
 END//
 delimiter ;
