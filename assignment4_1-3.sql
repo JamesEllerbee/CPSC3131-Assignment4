@@ -70,75 +70,79 @@ CREATE TABLE newSalaries
     PRIMARY KEY(emp_no)
 );
 -- 2 insert into table
-
+-- insert the emp_no into the new salary table
 INSERT INTO newSalaries(emp_no)
 SELECT employees.emp_no
 FROM employees;
 
+-- insert the dept_name into the new salaries table
 INSERT INTO newSalaries(dept_name)
 SELECT departments.dept_name
 FROM departments, dept_emp, employees
 WHERE (employees.emp_no = dept_emp.emp_no) AND (dept_emp.dept_no = departments.dept_no);
 
+-- insert the salary from salaries table into new salaries, where the new salaries emp_no == salaries.emp_no
 INSERT INTO newSalaries(salary)
 SELECT salaries.salary
 FROM salaries
-WHERE employees.emp_no = salaries.emp_no;
+WHERE newSalaries.emp_no = salaries.emp_no;
 
+-- insert from date into the new salaries table
 INSERT INTO newSalaries(from_date)
 SELECT salaries.from_date
 FROM salaries
 WHERE employees.emp_no = salaries.emp_no;
 
-INSERT INTO newSalaries(from_date)
-SELECT salaries.from_date
+-- insert the to_date 
+INSERT INTO newSalaries(to_date)
+SELECT salaries.to_date
 FROM salaries
 WHERE employees.emp_no = salaries.emp_no;
 
 -- 3 update table (honesty these should *count* as a if, else if)
 UPDATE newSalaries
 SET
-	salary = salary + (salary + custServ)
+	salary = salary + (salary * custServ)
 WHERE newSalaries.dept_name = 'Customer Service';
 
 UPDATE newSalaries
 SET
-	salary = salary + (salary + devel)
+	salary = salary + (salary * devel)
 WHERE newSalaries.dept_name = 'Development';
 
 UPDATE newSalaries
 SET
-	salary = salary + (salary + finan)
+	salary = salary + (salary * finan)
 WHERE newSalaries.dept_name = 'Finance';
 
 UPDATE newSalaries
 SET
-	salary = salary + (salary + human)
+	salary = salary + (salary * human)
 WHERE newSalaries.dept_name = 'Human Resources';
 
 UPDATE newSalaries
 SET
-	salary = salary + (salary + market)
+	salary = salary + (salary * market)
 WHERE newSalaries.dept_name = 'Marketing';
 
 UPDATE newSalaries
 SET
-	salary = salary + (salary + product)
+	salary = salary + (salary * product)
 WHERE newSalaries.dept_name = 'Production';
 
 UPDATE newSalaries
 SET
-	salary = salary + (salary + quality)
+	salary = salary + (salary * quality)
 WHERE newSalaries.dept_name = 'Quality Management';
 
 UPDATE newSalaries
 SET
-	salary = salary + (salary + research)
+	salary = salary + (salary * research)
 WHERE newSalaries.dept_name = 'Research';
 
 UPDATE newSalaries
 SET
-	salary = salary + (salary + sales)
+	salary = salary + (salary * sales)
 WHERE newSalaries.dept_name = 'Sales';
 
 END//
