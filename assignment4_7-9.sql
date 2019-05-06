@@ -89,9 +89,7 @@ CREATE TABLE newSalaries
 	dept_name VARCHAR(255),
     salary INT,
     from_date DATE,
-    to_date DATE, 
-
-    PRIMARY KEY(emp_no)
+    to_date DATE
 );
 
 DELIMITER $$
@@ -122,9 +120,7 @@ CREATE TABLE oldSalaries
 	dept_name VARCHAR(255),
     salary INT,
     from_date DATE,
-    to_date DATE, 
-
-    PRIMARY KEY(emp_no)
+    to_date DATE
 );
 
 -- 9 create trigger for updating oldSalaries when newSalaries changes
@@ -146,8 +142,8 @@ BEGIN
 END$$
 DELIMITER ;
 -- 2 insert into table
-INSERT INTO newSalaries(emp_no, dept_name, salary, hire_date)
-SELECT employees.emp_no, departments.dept_name, salaries.salary, employees.hire_date
+INSERT INTO newSalaries(emp_no, dept_name, salary, to_date, from_date)
+SELECT employees.emp_no, departments.dept_name, salaries.salary, salaries.to_date, salaries.from_date
 FROM employees, dept_emp, departments, salaries
 WHERE (employees.emp_no = salaries.emp_no) AND (employees.emp_no = dept_emp.emp_no) AND (dept_emp.dept_no = departments.dept_no);
 -- 3 update table (honesty these should *count* as a if, else if)
