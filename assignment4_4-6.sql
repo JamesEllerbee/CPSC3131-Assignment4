@@ -38,8 +38,8 @@ DROP TABLE IF EXISTS salary;
 -- 6
 
 SELECT emp_no, first_name, flast_name, salary(s)
-FROM salaries 
+FROM newSalaries 
 INNER JOIN employees 
-ON salaries.emp_no = employees.emp_no;
+ON newSalaries.emp_no = employees.emp_no;
 END//
 delimiter ;
