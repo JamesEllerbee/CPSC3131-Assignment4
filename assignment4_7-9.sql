@@ -171,6 +171,7 @@ WHERE employees.emp_no = salaries.emp_no;
 
 -- 3 update table (honesty these should *count* as a if, else if)
 UPDATE newSalaries
+
 SET
 	salary = salary + (salary * custServ)
 WHERE newSalaries.dept_name = 'Customer Service';

@@ -54,7 +54,7 @@ DECLARE sales FLOAT DEFAULT 0.09;
 DROP TABLE IF EXISTS salariesCopy;
 DROP TABLE IF EXISTS newSalaries;
 -- copy salaries table into copy to avoid making presistent changes to database (avoid reimport of employee DB)
-CREATE TABLE salariesCopy LIKE salaires;
+CREATE TABLE salariesCopy LIKE salaries;
 INSERT salariesCopy SELECT * FROM salaries;
 
 -- 1 create table

@@ -32,7 +32,7 @@ CREATE PROCEDURE sum_pay_increase ()
 BEGIN
 -- 4
 DELETE FROM salary
-WHERE to_date = "1987-06-28";
+WHERE to_date < "1987-06-28";
 -- 5
 DROP TABLE IF EXISTS salary;
 -- 6
