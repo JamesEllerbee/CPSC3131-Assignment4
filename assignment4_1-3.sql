@@ -54,7 +54,7 @@ DECLARE sales FLOAT DEFAULT 0.09;
 DROP TABLE IF EXISTS salariesCopy;
 DROP TABLE IF EXISTS newSalaries;
 -- copy salaries table into copy to avoid making presistent changes to database (avoid reimport of employee DB)
-CREATE TABLE salariesCopy LIKE salaires;
+CREATE TABLE salariesCopy LIKE salaries;
 INSERT salariesCopy SELECT * FROM salaries;
 
 -- 1 create table
@@ -64,88 +64,62 @@ CREATE TABLE newSalaries
 	emp_no INT,
 	dept_name VARCHAR(255),
     salary INT,
-    from_date DATE,
-    to_date DATE, 
-
-    PRIMARY KEY(emp_no)
+    hire_date DATE
 );
 -- 2 insert into table
--- insert the emp_no into the new salary table
-INSERT INTO newSalaries(emp_no)
-SELECT employees.emp_no
-FROM employees;
-
--- insert the dept_name into the new salaries table
-INSERT INTO newSalaries(dept_name)
-SELECT departments.dept_name
-FROM departments, dept_emp, employees
-WHERE (employees.emp_no = dept_emp.emp_no) AND (dept_emp.dept_no = departments.dept_no);
-
--- insert the salary from salaries table into new salaries, where the new salaries emp_no == salaries.emp_no
-INSERT INTO newSalaries(salary)
-SELECT salaries.salary
-FROM salaries
-WHERE newSalaries.emp_no = salaries.emp_no;
-
--- insert from date into the new salaries table
-INSERT INTO newSalaries(from_date)
-SELECT salaries.from_date
-FROM salaries
-WHERE employees.emp_no = salaries.emp_no;
-
--- insert the to_date 
-INSERT INTO newSalaries(to_date)
-SELECT salaries.to_date
-FROM salaries
-WHERE employees.emp_no = salaries.emp_no;
+-- insert values into the new salaries table
+INSERT INTO newSalaries(emp_no, dept_name, salary, hire_date)
+SELECT employees.emp_no, departments.dept_name, salaries.salary, employees.hire_date
+FROM employees, dept_emp, departments, salaries
+WHERE (employees.emp_no = salaries.emp_no) AND (employees.emp_no = dept_emp.emp_no) AND (dept_emp.dept_no = departments.dept_no);
 
 -- 3 update table (honesty these should *count* as a if, else if)
+-- update salary for customer service
 UPDATE newSalaries
 SET
 	salary = salary + (salary * custServ)
 WHERE newSalaries.dept_name = 'Customer Service';
-
+-- update salary for development
 UPDATE newSalaries
 SET
 	salary = salary + (salary * devel)
 WHERE newSalaries.dept_name = 'Development';
-
+-- update salaru for finance
 UPDATE newSalaries
 SET
 	salary = salary + (salary * finan)
 WHERE newSalaries.dept_name = 'Finance';
-
+-- update salary for human resources
 UPDATE newSalaries
 SET
 	salary = salary + (salary * human)
 WHERE newSalaries.dept_name = 'Human Resources';
-
+-- update salary for marketing
 UPDATE newSalaries
 SET
 	salary = salary + (salary * market)
 WHERE newSalaries.dept_name = 'Marketing';
-
+-- update salary for production
 UPDATE newSalaries
 SET
 	salary = salary + (salary * product)
 WHERE newSalaries.dept_name = 'Production';
-
+-- update salary for quality Management
 UPDATE newSalaries
 SET
 	salary = salary + (salary * quality)
 WHERE newSalaries.dept_name = 'Quality Management';
-
+-- update salary for research
 UPDATE newSalaries
 SET
 	salary = salary + (salary * research)
 WHERE newSalaries.dept_name = 'Research';
-
+-- update salary for sales
 UPDATE newSalaries
 SET
 	salary = salary + (salary * sales)
 WHERE newSalaries.dept_name = 'Sales';
-
+-- return value, change this to sum
 END//
 delimiter ;
-
 CALL sum_pay_increase();
