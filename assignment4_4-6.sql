@@ -36,6 +36,10 @@ WHERE to_date < "1987-06-28";
 -- 5
 DROP TABLE IF EXISTS salary;
 -- 6
--- what tables do you want in a union?
+
+SELECT emp_no, first_name, flast_name, salary(s)
+FROM salaries 
+INNER JOIN employees 
+ON salaries.emp_no = employees.emp_no;
 END//
 delimiter ;
