@@ -26,27 +26,11 @@ has to read from at least 3 tables (to be done on the employees table) has to:
 -- Delete: when a new percent pay increase table is created delete old percent insertions
 -- Insert: when a new percent pay increase table is created insert percentages
 -- return sum of pay increases to clarify, the salary increase should be calculated based on percentages and then inserted into the appropriate department table
-SET @oldsum = 0;
-SET @newsum = 0;
-SET @sumdif = 0; 
+
 DROP PROCEDURE IF EXISTS sum_pay_increase; -- Drops procedure from previous execution
 delimiter //
-CREATE PROCEDURE sum_pay_increase (OUT sumdif)
+CREATE PROCEDURE sum_pay_increase ()
 BEGIN
-
--- Delete old Salary records
-DROP TABLE IF EXISTS retiredEmployees
-CREATE TABLE retiredEmployees
-(
-	emp_no INT,
-	dept_name VARCHAR(255),
-    salary INT,
-    from_date DATE,
-    to_date DATE, 
-
-    PRIMARY KEY(emp_no)
-);
-
 -- Precentage values, todo: update these values
 -- Customer Service
 DECLARE custServ FLOAT DEFAULT 0.01;
@@ -69,7 +53,6 @@ DECLARE sales FLOAT DEFAULT 0.09;
 -- drop tables from previous execution
 DROP TABLE IF EXISTS salariesCopy;
 DROP TABLE IF EXISTS newSalaries;
-DROP TABLE IF EXISTS oldSalaries;
 -- copy salaries table into copy to avoid making presistent changes to database (avoid reimport of employee DB)
 CREATE TABLE salariesCopy LIKE salaries;
 INSERT salariesCopy SELECT * FROM salaries;
@@ -81,143 +64,62 @@ CREATE TABLE newSalaries
 	emp_no INT,
 	dept_name VARCHAR(255),
     salary INT,
-    from_date DATE,
-    to_date DATE, 
-
-    PRIMARY KEY(emp_no)
+    hire_date DATE
 );
-DROP TRIGGER IF EXISTS Before_newSalaries_delete
-DROP TRIGGER IF EXISTS before_newSalaries_update
-DELIMITER $$
-CREATE TRIGGER before_newSalaries_delete 
-    BEFORE DELETE ON newSalaries
-    FOR EACH ROW 
-BEGIN
-    INSERT INTO retiredEmployees
-    SET action = 'update',
-     emp_no = OLD.emp_no,
-	   dept_name = OLD.dept_name,
-       salary = OLD.salary,
-       from_date = OLD.from_date,
-       to_date = OLD.to_date,
-        changedat = NOW(); 
-END$$
-DELIMITER ;
-DELETE FROM newSalaries
-WHERE to_date < "1987-06-28";
-DROP TRIGGER IF EXISTS after_newSalaries_insert
-CREATE TRIGGER after_newSalaries_insert 
-    AFTER INSERT ON newSalaries
-    FOR EACH ROW SET @oldsum = @oldsum + NEW.salary;
-
-CREATE TABLE oldSalaries
-(
-	emp_no INT,
-	dept_name VARCHAR(255),
-    salary INT,
-    from_date DATE,
-    to_date DATE, 
-
-    PRIMARY KEY(emp_no)
-);
-
--- 9 create trigger for updating oldSalaries when newSalaries changes
-DROP TRIGGER IF EXISTS before_newSalaries_update
-DELIMITER $$
-CREATE TRIGGER before_newSalaries_update 
-    BEFORE UPDATE ON newSalaries
-    FOR EACH ROW 
-BEGIN
-    INSERT INTO oldSalaries
-    SET action = 'update',
-     emp_no = OLD.emp_no,
-	   dept_name = OLD.dept_name,
-       salary = OLD.salary,
-       from_date = OLD.from_date,
-       to_date = OLD.to_date,
-        changedat = NOW(); 
-        SET @newsum = @newsum + new.salaries;
-END$$
-DELIMITER ;
 -- 2 insert into table
--- insert the emp_no into the new salary table
-INSERT INTO newSalaries(emp_no)
-SELECT employees.emp_no
-FROM employees;
-
--- insert the dept_name into the new salaries table
-INSERT INTO newSalaries(dept_name)
-SELECT departments.dept_name
-FROM departments, dept_emp, employees
-WHERE (employees.emp_no = dept_emp.emp_no) AND (dept_emp.dept_no = departments.dept_no);
-
--- insert the salary from salaries table into new salaries, where the new salaries emp_no == salaries.emp_no
-INSERT INTO newSalaries(salary)
-SELECT salaries.salary
-FROM salaries
-WHERE newSalaries.emp_no = salaries.emp_no;
-
--- insert from date into the new salaries table
-INSERT INTO newSalaries(from_date)
-SELECT salaries.from_date
-FROM salaries
-WHERE employees.emp_no = salaries.emp_no;
-
--- insert the to_date 
-INSERT INTO newSalaries(to_date)
-SELECT salaries.to_date
-FROM salaries
-WHERE employees.emp_no = salaries.emp_no;
+-- insert values into the new salaries table
+INSERT INTO newSalaries(emp_no, dept_name, salary, hire_date)
+SELECT employees.emp_no, departments.dept_name, salaries.salary, employees.hire_date
+FROM employees, dept_emp, departments, salaries
+WHERE (employees.emp_no = salaries.emp_no) AND (employees.emp_no = dept_emp.emp_no) AND (dept_emp.dept_no = departments.dept_no);
 
 -- 3 update table (honesty these should *count* as a if, else if)
+-- update salary for customer service
 UPDATE newSalaries
-
 SET
 	salary = salary + (salary * custServ)
 WHERE newSalaries.dept_name = 'Customer Service';
-
+-- update salary for development
 UPDATE newSalaries
 SET
 	salary = salary + (salary * devel)
 WHERE newSalaries.dept_name = 'Development';
-
+-- update salaru for finance
 UPDATE newSalaries
 SET
 	salary = salary + (salary * finan)
 WHERE newSalaries.dept_name = 'Finance';
-
+-- update salary for human resources
 UPDATE newSalaries
 SET
 	salary = salary + (salary * human)
 WHERE newSalaries.dept_name = 'Human Resources';
-
+-- update salary for marketing
 UPDATE newSalaries
 SET
 	salary = salary + (salary * market)
 WHERE newSalaries.dept_name = 'Marketing';
-
+-- update salary for production
 UPDATE newSalaries
 SET
 	salary = salary + (salary * product)
 WHERE newSalaries.dept_name = 'Production';
-
+-- update salary for quality Management
 UPDATE newSalaries
 SET
 	salary = salary + (salary * quality)
 WHERE newSalaries.dept_name = 'Quality Management';
-
+-- update salary for research
 UPDATE newSalaries
 SET
 	salary = salary + (salary * research)
 WHERE newSalaries.dept_name = 'Research';
-
+-- update salary for sales
 UPDATE newSalaries
 SET
 	salary = salary + (salary * sales)
 WHERE newSalaries.dept_name = 'Sales';
-
+-- return value, change this to sum
 END//
 delimiter ;
-SET @sumdif = @newSalary - @oldSalary;
--- call procedure and return total payroll increase
-CALL sum_pay_increase(@sumdif);
+CALL sum_pay_increase();
