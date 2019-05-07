@@ -29,11 +29,17 @@ has to read from at least 3 tables (to be done on the employees table) has to:
 SET @oldsum = 0;
 SET @newsum = 0;
 SET @sumdif = 0; 
+DROP TRIGGER IF EXISTS after_newSalaries_insert;
+DROP TRIGGER IF EXISTS before_newSalaries_delete;
+DROP TRIGGER IF EXISTS before_newSalaries_update;
+DROP TABLE IF EXISTS oldSalaries;
 DROP PROCEDURE IF EXISTS sum_pay_increase; -- Drops procedure from previous execution
 delimiter //
 CREATE PROCEDURE sum_pay_increase (OUT sumdif)
 BEGIN
-
+DROP TRIGGER IF EXISTS after_newSalaries_insert;
+DROP TRIGGER IF EXISTS before_newSalaries_delete;
+DROP TRIGGER IF EXISTS before_newSalaries_update;
 -- Delete old Salary records
 DROP TABLE IF EXISTS retiredEmployees
 CREATE TABLE retiredEmployees
@@ -42,9 +48,10 @@ CREATE TABLE retiredEmployees
 	dept_name VARCHAR(255),
     salary INT,
     from_date DATE,
-    to_date DATE, 
+    to_date DATE
+    -- , 
 
-    PRIMARY KEY(emp_no)
+    -- PRIMARY KEY(emp_no)
 );
 
 -- Precentage values, todo: update these values
@@ -86,8 +93,7 @@ CREATE TABLE newSalaries
 
     PRIMARY KEY(emp_no)
 );
-DROP TRIGGER IF EXISTS Before_newSalaries_delete
-DROP TRIGGER IF EXISTS before_newSalaries_update
+
 DELIMITER $$
 CREATE TRIGGER before_newSalaries_delete 
     BEFORE DELETE ON newSalaries
@@ -105,7 +111,7 @@ END$$
 DELIMITER ;
 DELETE FROM newSalaries
 WHERE to_date < "1987-06-28";
-DROP TRIGGER IF EXISTS after_newSalaries_insert
+
 CREATE TRIGGER after_newSalaries_insert 
     AFTER INSERT ON newSalaries
     FOR EACH ROW SET @oldsum = @oldsum + NEW.salary;
@@ -136,7 +142,7 @@ BEGIN
        from_date = OLD.from_date,
        to_date = OLD.to_date,
         changedat = NOW(); 
-        SET @newsum = @newsum + new.salaries;
+        SET @newsum = @newsum + new.salary;
 END$$
 DELIMITER ;
 -- 2 insert into table
